@@ -27,6 +27,10 @@ public class WebPage {
         return title;
     }
 
+    public long getVisitTime() {
+        return visitTime;
+    }
+
     public void displayPage() {
         System.out.println("Current Page: " + title + " (" + url + ")");
     }
