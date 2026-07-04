@@ -143,6 +143,14 @@ public class Main {
                     System.out.println("Cache cleared.");
 
                     break;
+                    
+                case 9:
+                   
+                    System.out.println("Đang chạy thực nghiệm đo lường hiệu năng...");
+                  
+                    browser.PerformanceTest.runTest();
+                   
+                    break;
 
                 case 0:
 
