@@ -1,0 +1,61 @@
+public class PerformanceTest {
+
+    public static void main(String[] args) {
+        // Các mốc dữ liệu cần kiểm thử
+        int[] dataSizes = {100, 500, 1000, 2000, 5000};
+        int runs = 5;
+
+        System.out.println("KẾT QUẢ THỰC NGHIỆM HIỆU NĂNG (Trung bình sau 5 lần chạy)");
+        System.out.println("-------------------------------------------------------------------------");
+        System.out.printf("%-15s | %-25s | %-25s\n", "Input Size (n)", "Two-Stack Time (ms)", "Single List Time (ms)");
+        System.out.println("-------------------------------------------------------------------------");
+
+        for (int size : dataSizes) {
+            long totalStackTime = 0;
+            long totalListTime = 0;
+
+            for (int i = 0; i < runs; i++) {
+                // 1. Sinh hàng ngàn URL giả để phục vụ kiểm thử
+                String[] fakeUrls = new String[size];
+                for (int j = 0; j < size; j++) {
+                    fakeUrls[j] = "https://example.com/page-" + j;
+                }
+
+                // 2. Test thuật toán Two-Stack
+                Browser stackBrowser = new Browser();
+                long startStack = System.nanoTime();
+                simulateActions(stackBrowser, null, fakeUrls);
+                long endStack = System.nanoTime();
+                totalStackTime += (endStack - startStack);
+
+                // 3. Test thuật toán Single List
+                SingleListBrowser listBrowser = new SingleListBrowser();
+                long startList = System.nanoTime();
+                simulateActions(null, listBrowser, fakeUrls);
+                long endList = System.nanoTime();
+                totalListTime += (endList - startList);
+            }
+
+            // Tính trung bình (chia cho runs) và đổi từ nanoseconds sang milliseconds
+            double avgStackMs = (totalStackTime / (double) runs) / 1_000_000.0;
+            double avgListMs = (totalListTime / (double) runs) / 1_000_000.0;
+
+            System.out.printf("%-15d | %-25.4f | %-25.4f\n", size, avgStackMs, avgListMs);
+        }
+    }
+
+    // Kịch bản test: Truy cập n trang -> Lùi lại n/2 trang -> Truy cập n/2 trang mới
+    private static void simulateActions(Browser stackBrowser, SingleListBrowser listBrowser, String[] urls) {
+        int n = urls.length;
+        
+        if (stackBrowser != null) {
+            for (int i = 0; i < n; i++) stackBrowser.visitPage(new WebPage(urls[i]));
+            for (int i = 0; i < n / 2; i++) stackBrowser.goBack();
+            for (int i = 0; i < n / 2; i++) stackBrowser.visitPage(new WebPage(urls[i] + "-new"));
+        } else if (listBrowser != null) {
+            for (int i = 0; i < n; i++) listBrowser.visitPage(new WebPage(urls[i]));
+            for (int i = 0; i < n / 2; i++) listBrowser.goBack();
+            for (int i = 0; i < n / 2; i++) listBrowser.visitPage(new WebPage(urls[i] + "-new"));
+        }
+    }
+}
