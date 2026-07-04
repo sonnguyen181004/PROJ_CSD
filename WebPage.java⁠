@@ -1,6 +1,0 @@
-public class WebPage {
-    public String url;
-    public WebPage(String url) {
-        this.url = url;
-    }
-}
